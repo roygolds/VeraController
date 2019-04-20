@@ -15,6 +15,7 @@ namespace SmartHome
 
         private HttpClient m_Client = new HttpClient();
         private XmlDocument m_UserDataXml = null;
+        private XmlDocument m_StatusXml = null;
 
         public delegate void DebugPrintHandler(string sMsg);
 
@@ -27,6 +28,7 @@ namespace SmartHome
 
         public Dictionary<int, string> Rooms = new Dictionary<int, string>();
         public List<Device> Devices = new List<Device>();
+        public List<Alert> Alerts = new List<Alert>();
         public string Address { get; private set; }
         public VeraController(string sAddress)
         {
@@ -43,6 +45,14 @@ namespace SmartHome
             return sResponseString;
         }
 
+        public async Task<string> SendActionCommandAsync(int iDeviceNum, string sServiceName, string sActionName, List<Tuple<string, string>> parameters = null)
+        {
+            string sParams = (parameters == null) ? "" : "&" + string.Join("&", parameters.Select(t => string.Format("{0}={1}", t.Item1, t.Item2)));
+            string sRequest = String.Format("data_request?id=action&output_format=xml&DeviceNum={0}&serviceId={1}&action={2}{3}",
+                iDeviceNum, sServiceName, sActionName, sParams);
+            return await SendCommandAsync(sRequest);
+        }
+
         public async Task ConnectAsync()
         {
             string sResponseString = await SendCommandAsync("data_request?id=user_data&output_format=xml");
@@ -50,8 +60,17 @@ namespace SmartHome
             m_UserDataXml = new XmlDocument();
             m_UserDataXml.LoadXml(sResponseString);
 
+            sResponseString = await SendCommandAsync("data_request?id=status&output_format=xml");
+
+            m_StatusXml = new XmlDocument();
+            m_StatusXml.LoadXml(sResponseString);
+
             PopulateRooms();
             PopulateDevices();
+            PopulateAlerts();
+
+            DumpDevicesInfo();
+            DumpAlerts();
         }
 
         private Device CreateDevice(XmlNode device)
@@ -61,6 +80,7 @@ namespace SmartHome
             switch (xmlAttribs["device_type"].Value)
             {
                 case Device.SwitchDeviceType: return new SwitchDevice(device, this);
+                case Device.RollerShutterDeviceType: return new RollerShutter(device, this);
                 default: return new Device(device, this);
             }
         }
@@ -85,6 +105,48 @@ namespace SmartHome
                 Rooms[Convert.ToInt32(xmlAttribs["id"].Value)] = xmlAttribs["name"].Value;
             }
         }
+        private void PopulateAlerts()
+        {
+            Alerts.Clear();
+            XmlNodeList alerts = m_StatusXml.SelectNodes("root/alerts/alert");
+            foreach (XmlNode alert in alerts)
+            {
+                Alerts.Add(AlertFactory.Construct(alert, this));
+            }
+        }
 
+        public async Task DeleteAlertsAsync()
+        {
+            string sResponseString = await SendCommandAsync("data_request?id=del_alert&pk_alert=*");
+            Alerts.Clear();
+        }
+
+        public void DumpDevicesInfo()
+        {
+            string sMsg = "";
+            bool bAddNewLine = false;
+            foreach (Device device in Devices)
+            {
+                if (bAddNewLine) sMsg += Environment.NewLine;
+                bAddNewLine = true;
+
+                sMsg += String.Format("{0} --- {1} --- {2}: {3}", device.LocalUDN, device.ID, device.Name, device.Room);
+            }
+            OnLog(sMsg);
+        }
+
+        public void DumpAlerts()
+        {
+            string sMsg = "";
+            bool bAddNewLine = false;
+            foreach (Alert alert in Alerts)
+            {
+                if (bAddNewLine) sMsg += Environment.NewLine;
+                bAddNewLine = true;
+
+                sMsg += alert.ToString();
+            }
+            OnLog(sMsg);
+        }
     }
 }

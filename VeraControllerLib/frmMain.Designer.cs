@@ -37,6 +37,9 @@
             this.btnPrintDeviceInfo = new System.Windows.Forms.Button();
             this.btnSwitchOn = new System.Windows.Forms.Button();
             this.btnSwitchOff = new System.Windows.Forms.Button();
+            this.btnSetLevel = new System.Windows.Forms.Button();
+            this.txtLevel = new System.Windows.Forms.MaskedTextBox();
+            this.btnDeleteAlerts = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnGetDevices
@@ -55,6 +58,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtOutput.BackColor = System.Drawing.SystemColors.Window;
+            this.txtOutput.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtOutput.Location = new System.Drawing.Point(324, 12);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
@@ -98,6 +102,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.tvwDevices.Location = new System.Drawing.Point(12, 224);
             this.tvwDevices.Name = "tvwDevices";
+            this.tvwDevices.ShowNodeToolTips = true;
             this.tvwDevices.Size = new System.Drawing.Size(306, 280);
             this.tvwDevices.TabIndex = 5;
             // 
@@ -131,11 +136,43 @@
             this.btnSwitchOff.UseVisualStyleBackColor = true;
             this.btnSwitchOff.Click += new System.EventHandler(this.btnSwitchOff_ClickAsync);
             // 
+            // btnSetLevel
+            // 
+            this.btnSetLevel.Location = new System.Drawing.Point(174, 67);
+            this.btnSetLevel.Name = "btnSetLevel";
+            this.btnSetLevel.Size = new System.Drawing.Size(75, 23);
+            this.btnSetLevel.TabIndex = 9;
+            this.btnSetLevel.Text = "Set &Level";
+            this.btnSetLevel.UseVisualStyleBackColor = true;
+            this.btnSetLevel.Click += new System.EventHandler(this.btnSetLevel_Click);
+            // 
+            // txtLevel
+            // 
+            this.txtLevel.Location = new System.Drawing.Point(255, 69);
+            this.txtLevel.Mask = "00#";
+            this.txtLevel.Name = "txtLevel";
+            this.txtLevel.Size = new System.Drawing.Size(63, 20);
+            this.txtLevel.TabIndex = 10;
+            this.txtLevel.ValidatingType = typeof(int);
+            // 
+            // btnDeleteAlerts
+            // 
+            this.btnDeleteAlerts.Location = new System.Drawing.Point(12, 96);
+            this.btnDeleteAlerts.Name = "btnDeleteAlerts";
+            this.btnDeleteAlerts.Size = new System.Drawing.Size(75, 23);
+            this.btnDeleteAlerts.TabIndex = 11;
+            this.btnDeleteAlerts.Text = "Clear &Alerts";
+            this.btnDeleteAlerts.UseVisualStyleBackColor = true;
+            this.btnDeleteAlerts.Click += new System.EventHandler(this.btnDeleteAlerts_ClickAsync);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(949, 516);
+            this.Controls.Add(this.btnDeleteAlerts);
+            this.Controls.Add(this.txtLevel);
+            this.Controls.Add(this.btnSetLevel);
             this.Controls.Add(this.btnSwitchOff);
             this.Controls.Add(this.btnSwitchOn);
             this.Controls.Add(this.btnPrintDeviceInfo);
@@ -163,6 +200,9 @@
         private System.Windows.Forms.Button btnPrintDeviceInfo;
         private System.Windows.Forms.Button btnSwitchOn;
         private System.Windows.Forms.Button btnSwitchOff;
+        private System.Windows.Forms.Button btnSetLevel;
+        private System.Windows.Forms.MaskedTextBox txtLevel;
+        private System.Windows.Forms.Button btnDeleteAlerts;
     }
 }
 

@@ -75,16 +75,17 @@ namespace SmartHome
             public bool GetStateValue(string sServiceName, string sVarName, out float fValue)
             {
                 string sValue;
+                fValue = float.NaN;
                 bool bRet = GetStateValue(sServiceName, sVarName, out sValue);
-                fValue = bRet ? Convert.ToSingle(sValue) : float.NaN;
+                bRet = bRet ? Single.TryParse(sValue, out fValue) : false;
                 return bRet;
             }
 
             public float GetFloatValue(string sServiceName, string sVarName)
             {
-                string sValue;
-                bool bRet = GetStateValue(sServiceName, sVarName, out sValue);
-                return bRet ? Convert.ToSingle(sValue) : float.NaN;
+                float fValue;
+                bool bRet = GetStateValue(sServiceName, sVarName, out fValue);
+                return fValue;
             }
 
             public int GetIntValue(string sServiceName, string sVarName)
@@ -96,13 +97,17 @@ namespace SmartHome
         }
 
         public const string SwitchDeviceType = "urn:schemas-upnp-org:device:BinaryLight:1";
+        public const string DimmerDeviceType = "urn:schemas-upnp-org:device:Dimmer:1";
+        public const string RollerShutterDeviceType = "urn:schemas-micasaverde-com:device:WindowCovering:1";
 
         protected const string m_sEnergyServiceName = "urn:micasaverde-com:serviceId:EnergyMetering1";
         protected const string m_sSwitchServiceName = "urn:upnp-org:serviceId:SwitchPower1";
+        protected const string m_sDimmerServiceName = "urn:upnp-org:serviceId:Dimming1";
 
         public string Name { get; private set; }
         public string Room { get; private set; }
         public int ID { get; private set; }
+        public string LocalUDN { get; private set; }
         public string Type { get; private set; }
         public int ParentID { get; private set; }
         public float Watts { get { return m_States.GetFloatValue(m_sEnergyServiceName, "Watts"); } }
@@ -123,6 +128,7 @@ namespace SmartHome
             string sInfo = String.Format("Device Name: {0}", Name) + Environment.NewLine;
             sInfo += String.Format("Device Type: {0}", Type) + Environment.NewLine;
             sInfo += String.Format("Device ID: {0}", ID) + Environment.NewLine;
+            sInfo += String.Format("Device Local UDN: {0}", LocalUDN) + Environment.NewLine;
             sInfo += String.Format("Parent ID: {0}", ParentID) + Environment.NewLine;
             sInfo += String.Format("Room: {0}", Room) + Environment.NewLine;
             sInfo += String.Format("Watts: {0}", Watts) + Environment.NewLine;
@@ -139,6 +145,7 @@ namespace SmartHome
             ID = Convert.ToInt32(xmlAttribs["id"].Value);
             Name = xmlAttribs["name"].Value;
             Type = xmlAttribs["device_type"].Value;
+            LocalUDN = xmlAttribs["local_udn"].Value;
 
             XmlAttribute parentIdAttrib = xmlAttribs["id_parent"];
             ParentID = ((parentIdAttrib != null) ? Convert.ToInt32(parentIdAttrib.Value) : -1);

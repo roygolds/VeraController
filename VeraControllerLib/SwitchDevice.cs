@@ -28,9 +28,8 @@ namespace SmartHome
 
         public async Task SwitchAsync(bool bState)
         {
-            string sRequest = String.Format("data_request?id=action&output_format=xml&DeviceNum={0}&serviceId={1}&action=SetTarget&newTargetValue={2}", 
-                ID, m_sSwitchServiceName, (bState ? 1 : 0));
-            string sResponseString = await Controller.SendCommandAsync(sRequest);
+            List<Tuple<string, string>> parameters = new List<Tuple<string, string>>{ new Tuple<string, string>("newTargetValue", (bState ? "1" : "0")) };
+            string sResponseString = await Controller.SendActionCommandAsync(ID, m_sSwitchServiceName, "SetTarget", parameters);
         }
     }
 }

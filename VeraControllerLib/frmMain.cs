@@ -50,7 +50,56 @@ namespace SmartHome
                 newNode.Tag = device;
             }
 
+            UpdateAlertsInTreeView();
+
             tvwDevices.ExpandAll();
+        }
+
+        private void ClearAlertsFromSubTree(TreeNode node)
+        {
+            Font oldFont = ((node.NodeFont == null) ? node.TreeView.Font : node.NodeFont);
+
+            node.NodeFont = new Font(oldFont, oldFont.Style & (~FontStyle.Bold));
+            node.ToolTipText = null;
+
+            foreach(TreeNode child in node.Nodes)
+            {
+                ClearAlertsFromSubTree(child);
+            }
+        }
+
+        private void ClearAlertsFromTreeView()
+        {
+            foreach (TreeNode node in tvwDevices.Nodes)
+            {
+                ClearAlertsFromSubTree(node);
+            }
+        }
+
+        private void UpdateAlertsInTreeView()
+        {
+            ClearAlertsFromTreeView();
+
+            foreach (Alert alert in m_Controller.Alerts)
+            {
+                if (alert is DeviceAlert)
+                {
+                    DeviceAlert devAlert = (DeviceAlert)alert;
+                    TreeNode[] nodes = tvwDevices.Nodes.Find(devAlert.DeviceID.ToString(), true);
+                    if (nodes.Length > 0)
+                    {
+                        foreach (TreeNode node in nodes)
+                        {
+                            Font oldFont = ((node.NodeFont == null) ? node.TreeView.Font : node.NodeFont);
+                            node.NodeFont = new Font(oldFont, oldFont.Style | FontStyle.Bold);
+
+                            string sAlert = ((node.ToolTipText == null) ? "" : (node.ToolTipText + Environment.NewLine));
+
+                            node.ToolTipText = sAlert + devAlert.ToString();
+                        }
+                    }
+                }
+            }
         }
 
         private async void btnGetDevices_ClickAsync(object sender, EventArgs e)
@@ -86,6 +135,17 @@ namespace SmartHome
         {
             SwitchDevice device = tvwDevices.SelectedNode.Tag as SwitchDevice;
             if (device != null) await device.SwitchAsync(false);
+        }
+
+        private async void btnSetLevel_Click(object sender, EventArgs e)
+        {
+            Dimmer device = tvwDevices.SelectedNode.Tag as Dimmer;
+            if (device != null) await device.SetLoadLevelAsync(Convert.ToUInt16(txtLevel.Text));
+        }
+
+        private async void btnDeleteAlerts_ClickAsync(object sender, EventArgs e)
+        {
+            await m_Controller.DeleteAlertsAsync();
         }
     }
 }
