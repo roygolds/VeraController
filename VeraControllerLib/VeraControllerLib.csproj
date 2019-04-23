@@ -65,6 +65,7 @@
       <DependentUpon>Switch.cs</DependentUpon>
     </Compile>
     <Compile Include="SwitchDevice.cs" />
+    <Compile Include="UnixTime.cs" />
     <Compile Include="VeraController.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>

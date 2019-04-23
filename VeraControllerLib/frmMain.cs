@@ -36,7 +36,7 @@ namespace SmartHome
         {
             tvwDevices.Nodes.Clear();
 
-            foreach (Device device in m_Controller.Devices)
+            foreach (Device device in m_Controller.Devices.Values)
             {
                 TreeNodeCollection parentNodes = tvwDevices.Nodes;
                 if (device.ParentID > -1)
@@ -146,6 +146,11 @@ namespace SmartHome
         private async void btnDeleteAlerts_ClickAsync(object sender, EventArgs e)
         {
             await m_Controller.DeleteAlertsAsync();
+        }
+
+        private async void btnReboot_ClickAsync(object sender, EventArgs e)
+        {
+            await m_Controller.RebootControllerAsync();
         }
     }
 }

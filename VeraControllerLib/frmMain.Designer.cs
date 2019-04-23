@@ -40,6 +40,7 @@
             this.btnSetLevel = new System.Windows.Forms.Button();
             this.txtLevel = new System.Windows.Forms.MaskedTextBox();
             this.btnDeleteAlerts = new System.Windows.Forms.Button();
+            this.btnReboot = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnGetDevices
@@ -165,11 +166,22 @@
             this.btnDeleteAlerts.UseVisualStyleBackColor = true;
             this.btnDeleteAlerts.Click += new System.EventHandler(this.btnDeleteAlerts_ClickAsync);
             // 
+            // btnReboot
+            // 
+            this.btnReboot.Location = new System.Drawing.Point(93, 96);
+            this.btnReboot.Name = "btnReboot";
+            this.btnReboot.Size = new System.Drawing.Size(75, 23);
+            this.btnReboot.TabIndex = 12;
+            this.btnReboot.Text = "&Reboot Unit";
+            this.btnReboot.UseVisualStyleBackColor = true;
+            this.btnReboot.Click += new System.EventHandler(this.btnReboot_ClickAsync);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(949, 516);
+            this.Controls.Add(this.btnReboot);
             this.Controls.Add(this.btnDeleteAlerts);
             this.Controls.Add(this.txtLevel);
             this.Controls.Add(this.btnSetLevel);
@@ -203,6 +215,7 @@
         private System.Windows.Forms.Button btnSetLevel;
         private System.Windows.Forms.MaskedTextBox txtLevel;
         private System.Windows.Forms.Button btnDeleteAlerts;
+        private System.Windows.Forms.Button btnReboot;
     }
 }
 

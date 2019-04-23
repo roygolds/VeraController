@@ -103,6 +103,9 @@ namespace SmartHome
         protected const string m_sEnergyServiceName = "urn:micasaverde-com:serviceId:EnergyMetering1";
         protected const string m_sSwitchServiceName = "urn:upnp-org:serviceId:SwitchPower1";
         protected const string m_sDimmerServiceName = "urn:upnp-org:serviceId:Dimming1";
+        protected const string m_sZWaveNetworkServiceName = "urn:micasaverde-com:serviceId:ZWaveNetwork1";
+
+        
 
         public string Name { get; private set; }
         public string Room { get; private set; }
@@ -112,7 +115,8 @@ namespace SmartHome
         public int ParentID { get; private set; }
         public float Watts { get { return m_States.GetFloatValue(m_sEnergyServiceName, "Watts"); } }
         public float KWH { get { return m_States.GetFloatValue(m_sEnergyServiceName, "KWH"); } }
-        public float KwhReading { get { return m_States.GetIntValue(m_sEnergyServiceName, "KWHReading"); } }
+        public UnixTime KwhReading { get { return m_States.GetIntValue(m_sEnergyServiceName, "KWHReading"); } }
+        public UnixTime LastPollSuccess { get { return m_States.GetIntValue(m_sZWaveNetworkServiceName, "LastPollSuccess"); } }
         public int RoomID { get; private set; }
         protected States m_States { get; set; } = null;
         protected VeraController Controller { get; set; }
@@ -133,7 +137,8 @@ namespace SmartHome
             sInfo += String.Format("Room: {0}", Room) + Environment.NewLine;
             sInfo += String.Format("Watts: {0}", Watts) + Environment.NewLine;
             sInfo += String.Format("kWH: {0}", KWH) + Environment.NewLine;
-            sInfo += String.Format("kWH Reading: {0}", KwhReading);
+            sInfo += String.Format("kWH Reading: {0}", KwhReading) + Environment.NewLine;
+            sInfo += String.Format("Last Poll Success: {0}", LastPollSuccess);
 
             return sInfo;
         }

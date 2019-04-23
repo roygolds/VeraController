@@ -27,7 +27,7 @@ namespace SmartHome
         }
 
         public Dictionary<int, string> Rooms = new Dictionary<int, string>();
-        public List<Device> Devices = new List<Device>();
+        public Dictionary<int, Device> Devices = new Dictionary<int, Device>();
         public List<Alert> Alerts = new List<Alert>();
         public string Address { get; private set; }
         public VeraController(string sAddress)
@@ -35,14 +35,25 @@ namespace SmartHome
             Address = sAddress;
         }
 
-        public async Task<string> SendCommandAsync(string sCmd)
+        public async Task<string> SendRequestAsync(string sRequest)
         {
-            string sRequest = String.Format("http://{0}:{1}/{2}", Address, m_uPort, sCmd);
             string sResponseString = await m_Client.GetStringAsync(sRequest);
 
             OnLog(String.Format("Request: {0}\nResponse: {1}", sRequest, sResponseString));
 
             return sResponseString;
+        }
+
+        public async Task<string> SendCommandAsync(string sCmd)
+        {
+            string sRequest = String.Format("http://{0}:{1}/{2}", Address, m_uPort, sCmd);
+            return await SendRequestAsync(sRequest);
+        }
+
+        public async Task<string> SendCgiCommandAsync(string sCmd)
+        {
+            string sRequest = String.Format("http://{0}/cgi-bin/{1}", Address, sCmd);
+            return await SendRequestAsync(sRequest);
         }
 
         public async Task<string> SendActionCommandAsync(int iDeviceNum, string sServiceName, string sActionName, List<Tuple<string, string>> parameters = null)
@@ -91,7 +102,7 @@ namespace SmartHome
             foreach (XmlNode xmlDevice in devices)
             {
                 Device device = CreateDevice(xmlDevice);
-                Devices.Add(device);
+                Devices.Add(device.ID, device);
             }
         }
 
@@ -121,11 +132,16 @@ namespace SmartHome
             Alerts.Clear();
         }
 
+        public async Task RebootControllerAsync()
+        {
+            string sResponseString = await SendCgiCommandAsync("cmh/cmh_reboot.sh?cmd=now");
+        }
+
         public void DumpDevicesInfo()
         {
             string sMsg = "";
             bool bAddNewLine = false;
-            foreach (Device device in Devices)
+            foreach (Device device in Devices.Values)
             {
                 if (bAddNewLine) sMsg += Environment.NewLine;
                 bAddNewLine = true;

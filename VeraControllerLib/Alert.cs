@@ -98,7 +98,7 @@ namespace SmartHome
         public string Description { get; private set; }
         public ulong ID { get; private set; }
         public EventType Type { get; private set; }
-        public ulong Timestamp { get; private set; }
+        public UnixTime Timestamp { get; private set; }
         public DateTime LocalTime { get; private set; }
         protected VeraController Controller { get; set; }
 
@@ -108,7 +108,7 @@ namespace SmartHome
 
             Controller = controller;
             Description = xmlAttribs["Description"].Value;
-            Timestamp = Convert.ToUInt64(xmlAttribs["LocalTimestamp"].Value);
+            Timestamp = Convert.ToInt64(xmlAttribs["LocalTimestamp"].Value);
             LocalTime = Convert.ToDateTime(xmlAttribs["LocalDate"].Value);
             ID = Convert.ToUInt64(xmlAttribs["PK_Alert"].Value);
             Type = (EventType)Convert.ToUInt32(xmlAttribs["EventType"].Value);
@@ -120,7 +120,7 @@ namespace SmartHome
             string sResponseString = await Controller.SendCommandAsync(sRequest);
         }
 
-        public new string ToString()
+        public override string ToString()
         {
             return String.Format("{0}: {1} - {2}", LocalTime, Type.GetDescription(), Description);
         }
@@ -144,9 +144,10 @@ namespace SmartHome
             DeviceType = xmlAttribs["DeviceType"].Value;
         }
 
-        public new string ToString()
+        public override string ToString()
         {
-            return String.Format("{0}: {1} - {2}: {3}", LocalTime, Type.GetDescription(), DeviceName, Description);
+            //Device device = Controller.Devices[DeviceID];
+            return String.Format("{0}: {1} - {2}: {3}", Timestamp, Type.GetDescription(), DeviceName, Description);
         }
     }
 
@@ -171,7 +172,5 @@ namespace SmartHome
 
             return retAlert;
         }
-
-
     }
 }
